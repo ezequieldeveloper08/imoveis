@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: simovel_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: simovel
+      MYSQL_PASSWORD: simovel
+      MYSQL_DATABASE: simovel
+    ports:
+      - "3306:3306"
+    volumes:
+      - simovel_mysqldata:/var/lib/mysql
+
+volumes:
+  simovel_mysqldata:
