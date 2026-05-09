@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { LeadSchema } from '../../../leads/infrastructure/repositories/lead.schema';
 
 @Entity('conversations')
 export class ConversationSchema {
@@ -7,6 +8,10 @@ export class ConversationSchema {
 
   @Column()
   leadId: string;
+
+  @ManyToOne(() => LeadSchema)
+  @JoinColumn({ name: 'leadId' })
+  lead: LeadSchema;
 
   @Column()
   userId: string;
@@ -41,6 +46,15 @@ export class MessageSchema {
   @ManyToOne(() => ConversationSchema, (conv) => conv.messages)
   @JoinColumn({ name: 'conversationId' })
   conversation: ConversationSchema;
+
+  @Column({ name: 'is_read', default: false })
+  isRead: boolean;
+
+  @Column({ name: 'media_url', type: 'text', nullable: true })
+  mediaUrl: string;
+
+  @Column({ name: 'media_type', nullable: true })
+  mediaType: string;
 
   @CreateDateColumn()
   createdAt: Date;

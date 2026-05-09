@@ -11,6 +11,7 @@ import { EventSchema } from '../../../modules/events/infrastructure/repositories
 import { ProposalSchema } from '../../../modules/proposals/infrastructure/repositories/proposal.schema';
 import { AppointmentSchema } from '../../../modules/appointments/infrastructure/repositories/appointment.schema';
 import { ContactSchema } from '../../../modules/contacts/infrastructure/repositories/contact.schema';
+import { WhatsappConfigSchema, WhatsappMessageSchema } from '../../../modules/whatsapp/infrastructure/repositories/whatsapp.schema';
 
 @Module({
   imports: [
@@ -31,6 +32,8 @@ import { ContactSchema } from '../../../modules/contacts/infrastructure/reposito
           ProposalSchema,
           AppointmentSchema,
           ContactSchema,
+          WhatsappConfigSchema,
+          WhatsappMessageSchema,
         ],
         synchronize: true, // Only for development
       }),

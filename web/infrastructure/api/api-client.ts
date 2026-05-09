@@ -18,7 +18,10 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
+  const url = `${BASE_URL}${endpoint}`;
+  console.log(`[apiClient] Request: ${method} ${url}`);
+
+  const res = await fetch(url, {
     method,
     headers,
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,

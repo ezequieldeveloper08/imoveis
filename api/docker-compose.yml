@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: simovel
       MYSQL_DATABASE: simovel
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - simovel_mysqldata:/var/lib/mysql
 

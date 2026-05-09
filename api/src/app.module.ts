@@ -11,6 +11,7 @@ import { ConversationModule } from './modules/conversations/conversations.module
 import { ProposalsModule } from './modules/proposals/proposals.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { ContactModule } from './modules/contacts/contact.module';
+import { WhatsappModule } from './modules/whatsapp/whatsapp.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ContactModule } from './modules/contacts/contact.module';
     ProposalsModule,
     AppointmentsModule,
     ContactModule,
+    WhatsappModule,
   ],
   controllers: [],
   providers: [],

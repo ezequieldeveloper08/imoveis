@@ -3,7 +3,9 @@ export class Conversation {
   leadId: string;
   userId: string;
   organizationId: string;
+  lead?: any;
   messages: Message[];
+  unreadCount: number;
   createdAt: Date;
   updatedAt: Date;
 
@@ -17,6 +19,9 @@ export class Message {
   content: string;
   senderId: string;
   conversationId: string;
+  isRead: boolean;
+  mediaUrl?: string;
+  mediaType?: string;
   createdAt: Date;
 
   constructor(partial: Partial<Message>) {

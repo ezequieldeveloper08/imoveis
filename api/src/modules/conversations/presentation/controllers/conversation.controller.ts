@@ -35,13 +35,22 @@ export class ConversationController {
 
   @Post(':id/messages')
   @ApiOperation({ summary: 'Add message to conversation' })
-  addMessage(@Param('id') id: string, @Body() createMessageDto: CreateMessageDto, @Request() req) {
-    return this.conversationService.addMessage(id, req.user.userId, createMessageDto.content);
+  addMessage(@Param('id') id: string, @Body() body: { content: string, mediaUrl?: string, mediaType?: 'image' | 'video' | 'document' }, @Request() req) {
+    return this.conversationService.addMessage(id, req.user.userId, body.content, { 
+      mediaUrl: body.mediaUrl, 
+      mediaType: body.mediaType 
+    });
   }
 
   @Get(':id/messages')
   @ApiOperation({ summary: 'Get messages from conversation' })
   findMessages(@Param('id') id: string) {
     return this.conversationService.findMessages(id);
+  }
+
+  @Post(':id/read')
+  @ApiOperation({ summary: 'Mark conversation as read' })
+  markAsRead(@Param('id') id: string, @Request() req) {
+    return this.conversationService.markAsRead(id, req.user.organizationId);
   }
 }
