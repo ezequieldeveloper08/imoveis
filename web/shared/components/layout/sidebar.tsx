@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  GitMerge, 
+import {
+  LayoutDashboard,
+  GitMerge,
   Target,
-  Users, 
-  Building2, 
-  MessageSquare, 
-  Calendar, 
-  UserCircle, 
+  Users,
+  Building2,
+  MessageSquare,
+  Calendar,
+  UserCircle,
   Network,
   LogOut,
   Contact,
@@ -28,9 +28,9 @@ const menuItems = [
   { name: 'Leads', icon: Target, href: '/admin/leads' },
   { name: 'Contatos', icon: Users, href: '/admin/contacts' },
   { name: 'Imóveis', icon: Building2, href: '/admin/properties' },
-  { 
-    name: 'Conversas', 
-    icon: MessageSquare, 
+  {
+    name: 'Conversas',
+    icon: MessageSquare,
     href: '/admin/conversations',
     children: [
       { name: 'Chat Principal', icon: MessageSquare, href: '/admin/conversations' },
@@ -48,7 +48,7 @@ export function Sidebar() {
   const [expandedItems, setExpandedItems] = useState<string[]>(['Conversas']);
 
   const toggleExpand = (name: string) => {
-    setExpandedItems(prev => 
+    setExpandedItems(prev =>
       prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
     );
   };
@@ -57,12 +57,12 @@ export function Sidebar() {
     <aside className="w-72 bg-grey-08 border-r border-grey-15 flex flex-col h-screen sticky top-0">
       <div className="p-8">
         <Link href="/admin" className="flex items-center gap-2">
-          <Image 
-            src="/assets/logo.svg" 
-            alt="Estatein" 
-            width={120} 
-            height={40} 
-            className="h-8 w-auto"
+          <Image
+            src="/assets/logo.svg"
+            alt="Estatein"
+            width={120}
+            height={40}
+            className="h-10 w-auto"
           />
         </Link>
       </div>
@@ -82,8 +82,8 @@ export function Sidebar() {
                   onClick={() => toggleExpand(item.name)}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all group",
-                    isParentActive 
-                      ? "bg-grey-10 text-white border border-grey-15" 
+                    isParentActive
+                      ? "bg-grey-10 text-white border border-grey-15"
                       : "text-grey-60 hover:text-white hover:bg-grey-10/50"
                   )}
                 >
@@ -102,8 +102,8 @@ export function Sidebar() {
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all group",
-                    isActive 
-                      ? "bg-grey-10 text-white border border-grey-15 shadow-sm shadow-purple-60/5" 
+                    isActive
+                      ? "bg-grey-10 text-white border border-grey-15 shadow-sm shadow-purple-60/5"
                       : "text-grey-60 hover:text-white hover:bg-grey-10/50"
                   )}
                 >
@@ -130,8 +130,8 @@ export function Sidebar() {
                         href={child.href}
                         className={cn(
                           "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all group",
-                          isChildActive 
-                            ? "text-white bg-grey-15/50" 
+                          isChildActive
+                            ? "text-white bg-grey-15/50"
                             : "text-grey-50 hover:text-white hover:bg-grey-15/30"
                         )}
                       >

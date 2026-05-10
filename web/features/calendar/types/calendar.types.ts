@@ -10,7 +10,10 @@ export interface Appointment {
   status: 'scheduled' | 'completed' | 'cancelled';
   createdAt: string;
   leadName?: string;
+  leadId?: string;
   propertyName?: string;
+  propertyTitle?: string;
+  propertyId?: string;
   location?: string;
 }
 

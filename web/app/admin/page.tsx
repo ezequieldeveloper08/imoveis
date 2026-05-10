@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { 
   StatsCards, 
   RevenueChart, 
@@ -5,8 +8,36 @@ import {
 } from '@/features/dashboard/components/dashboard-charts';
 import { Button } from '@/components/ui/button';
 import { Download, Plus, Filter } from 'lucide-react';
+import { dashboardService } from '@/features/dashboard/services/dashboard.service';
+import { DashboardOverview } from '@/features/dashboard/types/dashboard.types';
 
 export default function DashboardPage() {
+  const [data, setData] = useState<DashboardOverview | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const overview = await dashboardService.getOverview();
+        setData(overview);
+      } catch (error) {
+        console.error('Error fetching dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-60"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
       {/* Welcome Section */}
@@ -33,15 +64,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <StatsCards />
+      <StatsCards stats={data?.stats} />
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <RevenueChart />
+          <RevenueChart data={data?.revenueByMonth} />
         </div>
         <div className="lg:col-span-1">
-          <ConversionFunnel />
+          <ConversionFunnel data={data?.conversion} />
         </div>
       </div>
 
@@ -53,21 +84,19 @@ export default function DashboardPage() {
             <Button variant="link" className="text-purple-60 hover:text-purple-65 p-0 h-auto">Ver todos</Button>
           </div>
           <div className="space-y-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-grey-08 border border-grey-15 hover:border-purple-60/30 transition-all cursor-pointer group">
+            {data?.recentLeads.map((lead, i) => (
+              <div key={lead.id} className="flex items-center justify-between p-4 rounded-xl bg-grey-08 border border-grey-15 hover:border-purple-60/30 transition-all cursor-pointer group">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-grey-15 flex items-center justify-center text-sm font-bold text-white border border-grey-20 group-hover:bg-purple-60 transition-colors">
-                    {['JS', 'MP', 'RL', 'TC'][i-1]}
+                    {lead.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">
-                      {['João Silva', 'Maria Pires', 'Ricardo Lemos', 'Tatiana Costa'][i-1]}
-                    </p>
-                    <p className="text-xs text-grey-60">Interesse: Apartamento no Centro</p>
+                    <p className="text-sm font-semibold text-white">{lead.name}</p>
+                    <p className="text-xs text-grey-60">Interesse: {lead.interest || 'Não informado'}</p>
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider">
-                  Novo
+                  {lead.status}
                 </span>
               </div>
             ))}

@@ -1,39 +1,54 @@
 import { PropertyCard } from "./property-card"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-const properties = [
+const properties: any[] = [
   {
-    id: 1,
+    id: "1",
     title: "Seaside Serenity Villa",
-    tag: "Coastal Escapes - Where Waves Beckon",
     description: "Wake up to the soothing melody of waves. This beachfront villa offers... ",
-    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800",
-    beds: 4,
-    baths: 3,
-    type: "Villa",
-    price: "$1,250,000",
+    images: ["https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800"],
+    bedrooms: 4,
+    bathrooms: 3,
+    garages: 2,
+    area: 250,
+    type: "house",
+    listingType: "sale",
+    price: 1250000,
+    neighborhood: "Coastal Escapes",
+    city: "Malibu",
+    status: "AVAILABLE"
   },
   {
-    id: 2,
+    id: "2",
     title: "Metropolitan Haven",
-    tag: "Urban Oasis - Life in the Heart of the City",
     description: "Immerse yourself in the energy of the city. This modern apartment in the heart... ",
-    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800",
-    beds: 2,
-    baths: 2,
-    type: "Villa",
-    price: "$650,000",
+    images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800"],
+    bedrooms: 2,
+    bathrooms: 2,
+    garages: 1,
+    area: 120,
+    type: "apartment",
+    listingType: "rent",
+    price: 6500,
+    neighborhood: "Urban Oasis",
+    city: "New York",
+    status: "AVAILABLE"
   },
   {
-    id: 3,
+    id: "3",
     title: "Rustic Retreat Cottage",
-    tag: "Countryside Charm - Escape to Nature's Embrace",
     description: "Find tranquility in the countryside. This charming cottage is nestled amidst rolling hills... ",
-    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&q=80&w=800",
-    beds: 3,
-    baths: 3,
-    type: "Villa",
-    price: "$350,000",
+    images: ["https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&q=80&w=800"],
+    bedrooms: 3,
+    bathrooms: 3,
+    garages: 2,
+    area: 180,
+    type: "house",
+    listingType: "sale",
+    price: 350000,
+    neighborhood: "Countryside Charm",
+    city: "Austin",
+    status: "AVAILABLE"
   },
 ]
 
@@ -57,7 +72,7 @@ export function PropertyGrid() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.map((property) => (
-            <PropertyCard key={property.id} {...property} />
+            <PropertyCard key={property.id} property={property} />
           ))}
         </div>
 

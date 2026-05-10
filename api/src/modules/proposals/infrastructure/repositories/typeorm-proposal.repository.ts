@@ -13,18 +13,27 @@ export class TypeOrmProposalRepository implements ProposalRepository {
   ) {}
 
   async findByProperty(propertyId: string): Promise<Proposal[]> {
-    const proposals = await this.repository.find({ where: { propertyId } });
-    return proposals.map(p => new Proposal(p as any));
+    const proposals = await this.repository.find({ 
+      where: { propertyId },
+      relations: ['lead']
+    });
+    return proposals.map(p => new Proposal({ ...p, leadName: p.lead?.name } as any));
   }
 
   async findByLead(leadId: string): Promise<Proposal[]> {
-    const proposals = await this.repository.find({ where: { leadId } });
-    return proposals.map(p => new Proposal(p as any));
+    const proposals = await this.repository.find({ 
+      where: { leadId },
+      relations: ['lead']
+    });
+    return proposals.map(p => new Proposal({ ...p, leadName: p.lead?.name } as any));
   }
 
   async findByOrganization(orgId: string): Promise<Proposal[]> {
-    const proposals = await this.repository.find({ where: { organizationId: orgId } });
-    return proposals.map(p => new Proposal(p as any));
+    const proposals = await this.repository.find({ 
+      where: { organizationId: orgId },
+      relations: ['lead']
+    });
+    return proposals.map(p => new Proposal({ ...p, leadName: p.lead?.name } as any));
   }
 
   async findById(id: string): Promise<Proposal | null> {

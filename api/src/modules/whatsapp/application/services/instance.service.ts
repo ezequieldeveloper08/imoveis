@@ -120,7 +120,15 @@ export class InstanceService {
   }
 
   async getQrCode(name: string) {
-    return this.provider.getQrCode(name);
+    this.logger.log(`[InstanceService] Requesting QR Code for instance: ${name}`);
+    try {
+      const result = await this.provider.getQrCode(name);
+      this.logger.log(`[InstanceService] QR Code retrieved successfully for ${name}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`[InstanceService] Failed to get QR Code for ${name}: ${error.message}`);
+      throw error;
+    }
   }
 
   async logout(name: string) {

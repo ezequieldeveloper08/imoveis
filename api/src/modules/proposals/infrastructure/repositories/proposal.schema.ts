@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { LeadSchema } from '../../../leads/infrastructure/repositories/lead.schema';
 
 @Entity('proposals')
 export class ProposalSchema {
@@ -10,6 +11,10 @@ export class ProposalSchema {
 
   @Column()
   leadId: string;
+
+  @ManyToOne(() => LeadSchema, { createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'leadId' })
+  lead: LeadSchema;
 
   @Column({ type: 'decimal', precision: 12, scale: 2 })
   value: number;

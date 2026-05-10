@@ -40,10 +40,12 @@ export default function LeadDetailsPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [relatedLeads, setRelatedLeads] = useState<Lead[]>([]);
   const [property, setProperty] = useState<Property | null>(null);
+  const [proposals, setProposals] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
+  const [isCloseSaleModalOpen, setIsCloseSaleModalOpen] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [editedNotes, setEditedNotes] = useState('');
   const [discardReason, setDiscardReason] = useState('');
@@ -51,19 +53,21 @@ export default function LeadDetailsPage() {
   const [visitDate, setVisitDate] = useState('');
   const [visitTime, setVisitTime] = useState('');
 
+
   useEffect(() => {
     async function loadData() {
       try {
         const leadData = await leadsService.getById(id);
         setLead(leadData);
 
-        const [proposals, appointments, related, propertyData] = await Promise.all([
+        const [proposalsData, appointments, related, propertyData] = await Promise.all([
           proposalsService.getByLead(id),
           calendarService.getByLead(id),
           leadsService.getAll({ email: leadData.email }),
           leadData.propertyId ? propertiesService.getById(leadData.propertyId) : Promise.resolve(null)
         ]);
 
+        setProposals(proposalsData);
         setProperty(propertyData);
         setEditedNotes(leadData.notes || '');
 
@@ -78,7 +82,7 @@ export default function LeadDetailsPage() {
           }
         ];
 
-        proposals.forEach(p => {
+        proposalsData.forEach(p => {
           allActivities.push({
             id: p.id,
             type: 'proposal',
@@ -203,6 +207,15 @@ export default function LeadDetailsPage() {
                 >
                   <DollarSign className="h-4 w-4 mr-2 text-emerald-500" /> Fazer Proposta
                 </Button>
+
+                {lead.status?.toLowerCase() === 'proposal' && (
+                  <Button
+                    onClick={() => setIsCloseSaleModalOpen(true)}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-11 px-6 shadow-lg shadow-emerald-500/20"
+                  >
+                    <CheckCircle2 className="h-4 w-4 mr-2" /> Fechar Venda
+                  </Button>
+                )}
               </>
             )}
             <div className="h-6 w-px bg-grey-15 mx-1" />
@@ -748,6 +761,70 @@ export default function LeadDetailsPage() {
                     }}
                     className="flex-1 h-12 bg-emerald-500 text-white font-bold"
                   >Enviar Proposta</Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+ 
+      {/* Close Sale Modal */}
+      <AnimatePresence>
+        {isCloseSaleModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsCloseSaleModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-md bg-grey-10 border border-grey-15 rounded-3xl p-8 shadow-2xl">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3 text-emerald-500">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-black text-white">Fechar Negócio</h3>
+                </div>
+                <button onClick={() => setIsCloseSaleModalOpen(false)} className="h-8 w-8 rounded-lg bg-grey-08 border border-grey-15 flex items-center justify-center text-grey-40 hover:text-white"><X className="h-4 w-4" /></button>
+              </div>
+ 
+              <div className="space-y-6">
+                <div className="p-6 bg-grey-08 rounded-2xl border border-grey-15 text-center">
+                  <p className="text-[10px] text-grey-50 font-black uppercase tracking-widest mb-2">Valor da Venda</p>
+                  <p className="text-3xl font-black text-white">
+                    {lead.value ? lead.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00'}
+                  </p>
+                </div>
+ 
+                <p className="text-sm text-grey-60 leading-relaxed text-center">
+                  Ao confirmar o fechamento, o status deste lead mudará para <span className="text-emerald-500 font-bold">FECHADO</span> e o imóvel será marcado como <span className="text-emerald-500 font-bold">VENDIDO</span>.
+                </p>
+ 
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={() => setIsCloseSaleModalOpen(false)} className="flex-1 h-12 bg-grey-08 border-grey-15 text-white">Cancelar</Button>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        // 1. Update Lead Status
+                        await leadsService.update(id, { status: 'closed' });
+                        
+                        // 2. Update Property Status if exists
+                        if (lead.propertyId) {
+                          await propertiesService.update(lead.propertyId, { status: 'SOLD' });
+                        }
+
+                        // 3. Accept Latest Proposal to reflect in Revenue Dashboard
+                        const latestProposal = [...proposals].sort((a, b) => 
+                          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                        )[0];
+
+                        if (latestProposal) {
+                          await proposalsService.updateStatus(latestProposal.id, 'ACCEPTED');
+                        }
+ 
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('Error closing sale:', error);
+                      }
+                    }}
+                    className="flex-1 h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/20"
+                  >Confirmar Venda</Button>
                 </div>
               </div>
             </motion.div>

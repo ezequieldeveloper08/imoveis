@@ -35,7 +35,7 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
     loadProposals();
   }, [propertyId]);
 
-  const handleStatusUpdate = async (id: string, status: 'ACCEPTED' | 'REJECTED') => {
+  const handleStatusUpdate = async (id: string, status: 'ACCEPTED' | 'REJECTED' | 'PENDING') => {
     try {
       await proposalsService.updateStatus(id, status);
       setProposals(prev => prev.map(p => p.id === id ? { ...p, status } : p));
@@ -55,7 +55,7 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold text-white">Registro de Propostas</h3>
-        <Button 
+        <Button
           onClick={() => setIsModalOpen(true)}
           className="bg-purple-60 hover:bg-purple-65 text-white h-10 px-4 text-xs"
         >
@@ -64,7 +64,7 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
         </Button>
       </div>
 
-      <ProposalModal 
+      <ProposalModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         propertyId={propertyId}
@@ -96,11 +96,11 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
                       <span className={cn(
                         "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border",
                         proposal.status === 'ACCEPTED' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                        proposal.status === 'REJECTED' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                        "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                          proposal.status === 'REJECTED' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                            "bg-amber-500/10 text-amber-500 border-amber-500/20"
                       )}>
                         {proposal.status === 'ACCEPTED' ? 'Aceita' :
-                         proposal.status === 'REJECTED' ? 'Recusada' : 'Pendente'}
+                          proposal.status === 'REJECTED' ? 'Recusada' : 'Pendente'}
                       </span>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-grey-40">
@@ -110,24 +110,24 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Calendar className="h-3.5 w-3.5" />
-                        <span>{new Date(proposal.date).toLocaleDateString('pt-BR')}</span>
+                        <span>{new Date(proposal.createdAt).toLocaleDateString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {proposal.status === 'PENDING' && (
+                  {proposal.status === 'PENDING' && !proposals.some(p => p.status === 'ACCEPTED') && (
                     <>
-                      <Button 
+                      <Button
                         onClick={() => handleStatusUpdate(proposal.id, 'REJECTED')}
-                        variant="outline" 
+                        variant="outline"
                         className="h-10 px-4 border-grey-15 bg-transparent text-grey-40 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20"
                       >
                         <X className="h-4 w-4 mr-2" />
                         Recusar
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => handleStatusUpdate(proposal.id, 'ACCEPTED')}
                         className="h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white"
                       >
@@ -136,12 +136,24 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
                       </Button>
                     </>
                   )}
-                  <Button variant="ghost" className="h-10 w-10 p-0 text-grey-40 hover:text-white">
+
+                  {proposal.status === 'ACCEPTED' && (
+                    <Button
+                      onClick={() => handleStatusUpdate(proposal.id, 'PENDING')}
+                      variant="outline"
+                      className="h-10 px-4 border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancelar Contrato
+                    </Button>
+                  )}
+
+                  {/*  <Button variant="ghost" className="h-10 w-10 p-0 text-grey-40 hover:text-white">
                     <Clock className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
-              
+
               {proposal.notes && (
                 <div className="mt-4 pt-4 border-t border-grey-15">
                   <p className="text-xs text-grey-40 italic">"{proposal.notes}"</p>

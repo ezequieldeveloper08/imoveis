@@ -61,16 +61,28 @@ export class EvolutionClient {
   }
 
   async getQrCode(instanceName: string) {
+    const url = `${this.baseUrl}/instance/connect/${instanceName}`;
+    this.logger.debug(`[EvolutionClient] Fetching QR Code from: ${url}`);
+    this.logger.debug(`[EvolutionClient] Using API Key: ${this.apiKey.substring(0, 5)}...`);
+
     try {
       const response = await lastValueFrom(
-        this.httpService.get(`${this.baseUrl}/instance/connect/${instanceName}`, {
+        this.httpService.get(url, {
           headers: this.headers,
         }),
       );
+      
+      this.logger.log(`[EvolutionClient] QR Code response status: ${response.status}`);
+      if (response.data?.base64) {
+        this.logger.log(`[EvolutionClient] QR Code Base64 received (length: ${response.data.base64.length})`);
+      } else {
+        this.logger.warn(`[EvolutionClient] QR Code response received but no base64 found: ${JSON.stringify(response.data)}`);
+      }
+
       return response.data;
     } catch (error: any) {
       const apiError = error.response?.data;
-      this.logger.error(`Error fetching QR Code: ${error.message} - API Response: ${JSON.stringify(apiError)}`);
+      this.logger.error(`[EvolutionClient] Error fetching QR Code: ${error.message} - API Response: ${JSON.stringify(apiError)}`);
       throw new InternalServerErrorException(apiError?.message || 'Failed to fetch WhatsApp QR Code');
     }
   }

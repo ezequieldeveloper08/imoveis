@@ -10,44 +10,49 @@ import {
   ResponsiveContainer, 
   AreaChart, 
   Area,
-  Cell,
-  PieChart,
-  Pie
+  Cell
 } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, Users, Building2, Wallet, GitMerge } from 'lucide-react';
-
-// Mock Data
-const revenueData = [
-  { month: 'Jan', value: 45000 },
-  { month: 'Fev', value: 52000 },
-  { month: 'Mar', value: 48000 },
-  { month: 'Abr', value: 61000 },
-  { month: 'Mai', value: 55000 },
-  { month: 'Jun', value: 67000 },
-  { month: 'Jul', value: 72000 },
-];
-
-const conversionData = [
-  { name: 'Leads', value: 240 },
-  { name: 'Visitas', value: 120 },
-  { name: 'Propostas', value: 45 },
-  { name: 'Contratos', value: 18 },
-];
+import { DashboardStats, RevenueMonth, ConversionData } from '../types/dashboard.types';
 
 const COLORS = ['#703BF7', '#8254F8', '#936DF9', '#A486F9'];
 
 // Components
-export function StatsCards() {
-  const stats = [
-    { label: 'Receita Total', value: 'R$ 2.4M', trend: '+12.5%', icon: Wallet, color: 'text-purple-60' },
-    { label: 'Novos Leads', value: '1.284', trend: '+5.2%', icon: Users, color: 'text-blue-400' },
-    { label: 'Imóveis Ativos', value: '432', trend: '-2.4%', icon: Building2, color: 'text-emerald-400' },
-    { label: 'Valor em Pipeline', value: 'R$ 8,6M', trend: '+18.1%', icon: GitMerge, color: 'text-orange-400' },
+export function StatsCards({ stats }: { stats?: DashboardStats }) {
+  const items = [
+    { 
+      label: 'Receita Total', 
+      value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' }).format(stats?.totalRevenue || 0), 
+      trend: '+0%', 
+      icon: Wallet, 
+      color: 'text-purple-60' 
+    },
+    { 
+      label: 'Novos Leads', 
+      value: (stats?.newLeadsCount || 0).toLocaleString('pt-BR'), 
+      trend: '+0%', 
+      icon: Users, 
+      color: 'text-blue-400' 
+    },
+    { 
+      label: 'Imóveis Ativos', 
+      value: (stats?.activeProperties || 0).toLocaleString('pt-BR'), 
+      trend: '+0%', 
+      icon: Building2, 
+      color: 'text-emerald-400' 
+    },
+    { 
+      label: 'Valor em Pipeline', 
+      value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' }).format(stats?.pipelineValue || 0), 
+      trend: '+0%', 
+      icon: GitMerge, 
+      color: 'text-orange-400' 
+    },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((stat, i) => (
+      {items.map((stat, i) => (
         <div key={i} className="p-6 bg-grey-10 border border-grey-15 rounded-2xl hover:border-grey-30 transition-all group">
           <div className="flex items-center justify-between mb-4">
             <div className={`p-3 rounded-xl bg-grey-08 border border-grey-15 ${stat.color} group-hover:scale-110 transition-transform`}>
@@ -66,7 +71,7 @@ export function StatsCards() {
   );
 }
 
-export function RevenueChart() {
+export function RevenueChart({ data = [] }: { data?: RevenueMonth[] }) {
   return (
     <div className="p-6 bg-grey-10 border border-grey-15 rounded-2xl h-[400px] flex flex-col">
       <div className="flex items-center justify-between mb-8">
@@ -81,7 +86,7 @@ export function RevenueChart() {
       </div>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={revenueData}>
+          <AreaChart data={data}>
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#703BF7" stopOpacity={0.3}/>
@@ -124,7 +129,14 @@ export function RevenueChart() {
   );
 }
 
-export function ConversionFunnel() {
+export function ConversionFunnel({ data }: { data?: ConversionData }) {
+  const chartData = [
+    { name: 'Leads', value: data?.leads || 0 },
+    { name: 'Visitas', value: data?.visits || 0 },
+    { name: 'Propostas', value: data?.proposals || 0 },
+    { name: 'Contratos', value: data?.contracts || 0 },
+  ];
+
   return (
     <div className="p-6 bg-grey-10 border border-grey-15 rounded-2xl h-[400px] flex flex-col">
       <div className="mb-8">
@@ -133,7 +145,7 @@ export function ConversionFunnel() {
       </div>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={conversionData} layout="vertical">
+          <BarChart data={chartData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#262626" horizontal={false} />
             <XAxis type="number" hide />
             <YAxis 
@@ -150,7 +162,7 @@ export function ConversionFunnel() {
               cursor={{ fill: '#ffffff05' }}
             />
             <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={32}>
-              {conversionData.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Bar>
