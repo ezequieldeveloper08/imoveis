@@ -80,7 +80,7 @@ export function LeadsListing() {
             Exportar
           </Button>
           <Link href="/admin/leads/new">
-            <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white font-semibold shadow-lg shadow-purple-60/20 active:scale-95 transition-all">
+            <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white-pure font-semibold shadow-lg shadow-purple-60/20 active:scale-95 transition-all">
               <Plus className="h-4 w-4 mr-2" />
               Novo Lead
             </Button>

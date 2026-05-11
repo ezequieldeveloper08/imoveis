@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, Edit, 
   Users, TrendingUp, History, Clock,
   User, CheckCircle2, MessageSquare,
-  DollarSign, ArrowUpRight
+  DollarSign, ArrowUpRight, Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -14,6 +14,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Property } from '../types/property.types';
 import { propertiesService } from '../services/properties.service';
+import { proposalsService } from '../../proposals/services/proposals.service';
+import { calendarService } from '../../calendar/services/calendar.service';
 import { cn } from '@/lib/utils';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
@@ -38,18 +40,24 @@ export function PropertyDetails({ id }: PropertyDetailsProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'proposals' | 'agenda'>('overview');
   const [property, setProperty] = useState<Property | null>(null);
   const [leads, setLeads] = useState<any[]>([]);
+  const [proposals, setProposals] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [propData, leadsData] = await Promise.all([
+        const [propData, leadsData, proposalsData, appointmentsData] = await Promise.all([
           propertiesService.getById(id),
-          propertiesService.getLeads(id)
+          propertiesService.getLeads(id),
+          proposalsService.getByProperty(id),
+          calendarService.getByProperty(id)
         ]);
         setProperty(propData);
         setLeads(leadsData);
+        setProposals(proposalsData);
+        setAppointments(appointmentsData);
       } catch (error) {
         console.error('Failed to load property details:', error);
       } finally {
@@ -152,10 +160,10 @@ export function PropertyDetails({ id }: PropertyDetailsProps) {
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Visitas', value: '1,240', icon: TrendingUp, color: 'text-blue-400' },
-              { label: 'Leads', value: leads.length || '12', icon: Users, color: 'text-purple-400' },
-              { label: 'Propostas', value: '3', icon: DollarSign, color: 'text-green-400' },
-              { label: 'Conversão', value: '4.8%', icon: ArrowUpRight, color: 'text-orange-400' },
+              { label: 'Visitas', value: appointments.length || '0', icon: TrendingUp, color: 'text-blue-400' },
+              { label: 'Leads', value: leads.length || '0', icon: Users, color: 'text-purple-400' },
+              { label: 'Propostas', value: proposals.length || '0', icon: DollarSign, color: 'text-green-400' },
+              { label: 'Conversão', value: leads.length > 0 ? `${((proposals.length / leads.length) * 100).toFixed(1)}%` : '0%', icon: ArrowUpRight, color: 'text-orange-400' },
             ].map((stat) => (
               <div key={stat.label} className="bg-grey-10 border border-grey-15 p-6 rounded-2xl space-y-2">
                 <div className="flex items-center justify-between">
@@ -294,31 +302,39 @@ export function PropertyDetails({ id }: PropertyDetailsProps) {
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-white">Leads Interessados</h3>
-                    <Button variant="outline" className="border-grey-15 h-9 text-xs" asChild>
-                      <Link href="/admin/leads/new">Novo Lead</Link>
+                    <Button className="bg-purple-60 hover:bg-purple-65 text-white h-10 px-4 text-xs" asChild>
+                      <Link href="/admin/leads/new">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Novo Lead
+                      </Link>
                     </Button>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {leads.map(lead => (
-                      <div key={lead.id} className="p-4 bg-grey-08 border border-grey-15 rounded-2xl flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-purple-60/20 flex items-center justify-center text-purple-60 font-bold">
-                          {lead.name.charAt(0)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-white truncate">{lead.name}</p>
-                          <p className="text-xs text-grey-40 truncate">{lead.email}</p>
-                        </div>
-                        <span className="text-[10px] font-bold bg-grey-15 px-2 py-1 rounded text-grey-40">
-                          {lead.status}
-                        </span>
+                  
+                  {leads.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 bg-grey-08 rounded-3xl border border-dashed border-grey-15 text-center">
+                      <div className="h-16 w-16 rounded-full bg-grey-10 flex items-center justify-center mb-4">
+                        <Users className="h-8 w-8 text-grey-40" />
                       </div>
-                    ))}
-                    {leads.length === 0 && (
-                      <div className="col-span-2 text-center py-8 text-grey-40 text-sm">
-                        Nenhum lead vinculado a este imóvel.
-                      </div>
-                    )}
-                  </div>
+                      <p className="text-grey-40 font-medium">Nenhum lead vinculado a este imóvel.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {leads.map(lead => (
+                        <div key={lead.id} className="p-4 bg-grey-08 border border-grey-15 rounded-2xl flex items-center gap-4 hover:border-grey-20 transition-all group">
+                          <div className="h-10 w-10 rounded-full bg-purple-60/20 flex items-center justify-center text-purple-60 font-bold group-hover:scale-110 transition-transform">
+                            {lead.name.charAt(0)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-white truncate">{lead.name}</p>
+                            <p className="text-xs text-grey-40 truncate">{lead.email}</p>
+                          </div>
+                          <span className="text-[10px] font-bold bg-grey-15 px-2 py-1 rounded text-grey-40">
+                            {lead.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               )}
 

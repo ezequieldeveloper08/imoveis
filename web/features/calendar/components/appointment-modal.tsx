@@ -52,13 +52,17 @@ export function AppointmentModal({ isOpen, onClose, propertyId, leads, onSuccess
       // Current backend expects 'date' as Date object.
       const combinedDate = new Date(`${data.date}T${data.time}`);
       
-      await calendarService.create({
+      const payload = {
         propertyId,
         leadId: data.leadId,
         date: combinedDate.toISOString(),
         description: data.description,
         status: 'SCHEDULED',
-      });
+      };
+      
+      console.log('Sending payload:', payload);
+
+      await calendarService.create(payload);
 
       toast.success('Visita agendada com sucesso!');
       reset();

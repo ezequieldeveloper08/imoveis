@@ -34,7 +34,7 @@ export function Hero() {
             <Button variant="outline" className="border-grey-15 bg-grey-10 text-white h-14 px-8 text-lg hover:bg-grey-15">
               Saiba Mais
             </Button>
-            <Button className="bg-purple-60 hover:bg-purple-65 text-white h-14 px-8 text-lg">
+            <Button className="bg-purple-60 hover:bg-purple-65 text-white-pure h-14 px-8 text-lg">
               Ver Imóveis
             </Button>
           </div>

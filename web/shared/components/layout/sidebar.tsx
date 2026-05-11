@@ -62,7 +62,14 @@ export function Sidebar() {
             alt="Estatein"
             width={120}
             height={40}
-            className="h-10 w-auto"
+            className="h-10 w-auto hidden dark:block"
+          />
+          <Image
+            src="/assets/logo-black.svg"
+            alt="Estatein"
+            width={120}
+            height={40}
+            className="h-10 w-auto dark:hidden"
           />
         </Link>
       </div>

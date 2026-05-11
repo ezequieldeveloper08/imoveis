@@ -3,10 +3,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { 
-  Network, 
-  User, 
-  AlignLeft, 
+import {
+  Network,
+  User,
+  AlignLeft,
   Palette,
   ArrowRight,
   Plus
@@ -14,14 +14,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const departmentSchema = z.object({
@@ -39,16 +38,50 @@ const colorOptions = [
   { label: 'Rosa Pink', value: '#EC4899' },
 ];
 
-export function DepartmentForm() {
-  const [selectedColor, setSelectedColor] = useState(colorOptions[0].value);
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { departmentsService } from '../services/departments.service';
+import { usersService } from '../../users/services/users.service';
+import { User as UserType } from '../../users/types/user.types';
+import { toast } from 'sonner';
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+export function DepartmentForm() {
+  const router = useRouter();
+  const [selectedColor, setSelectedColor] = useState(colorOptions[0].value);
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(departmentSchema),
   });
 
-  const onSubmit = (data: any) => {
-    console.log({ ...data, color: selectedColor });
-    // Call service here
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const data = await usersService.getAll();
+        setUsers(data);
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      }
+    }
+    loadUsers();
+  }, []);
+
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true);
+    try {
+      await departmentsService.create({
+        ...data,
+        color: selectedColor,
+      });
+      toast.success('Departamento criado com sucesso!');
+      router.push('/admin/departments');
+    } catch (error) {
+      console.error('Failed to create department:', error);
+      toast.error('Erro ao criar departamento.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -78,8 +111,8 @@ export function DepartmentForm() {
               <Label htmlFor="description">Descrição / Objetivo</Label>
               <div className="relative">
                 <AlignLeft className="absolute left-4 top-4 h-4 w-4 text-grey-40 z-10" />
-                <textarea 
-                  id="description" 
+                <textarea
+                  id="description"
                   {...register('description')}
                   placeholder="Qual o foco desta divisão?"
                   className="w-full bg-grey-08 border border-grey-15 rounded-xl p-4 pl-12 text-white placeholder:text-grey-40 focus:ring-2 focus:ring-purple-60 outline-none h-32 transition-all"
@@ -95,19 +128,22 @@ export function DepartmentForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <Label htmlFor="managerId">Gestor Responsável</Label>
-              <Select>
-                <SelectTrigger className="h-14 bg-grey-08 border-grey-15">
+              <Select onValueChange={(val) => setValue('managerId', val)}>
+                <SelectTrigger className="h-14 bg-grey-08 border-grey-15 text-white">
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-grey-40" />
                     <SelectValue placeholder="Selecione um gestor" />
                   </div>
                 </SelectTrigger>
-                <SelectContent className="bg-grey-10 border-grey-15">
-                  <SelectItem value="1">Ezequiel Pires</SelectItem>
-                  <SelectItem value="2">Amanda Oliveira</SelectItem>
-                  <SelectItem value="3">Carlos Alberto</SelectItem>
+                <SelectContent className="bg-grey-10 border-grey-15 text-white">
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {errors.managerId && <p className="text-red-400 text-xs mt-1">{errors.managerId.message as string}</p>}
             </div>
 
             <div className="space-y-4">
@@ -123,8 +159,8 @@ export function DepartmentForm() {
                     onClick={() => setSelectedColor(option.value)}
                     className={cn(
                       "h-10 w-10 rounded-xl transition-all border-2",
-                      selectedColor === option.value 
-                        ? "border-white scale-110 shadow-lg" 
+                      selectedColor === option.value
+                        ? "border-white scale-110 shadow-lg"
                         : "border-transparent opacity-50 hover:opacity-100"
                     )}
                     style={{ backgroundColor: option.value }}
@@ -138,11 +174,20 @@ export function DepartmentForm() {
 
         {/* Footer Actions */}
         <div className="flex items-center justify-between gap-4 pt-4">
-          <Button type="button" variant="ghost" className="text-grey-60 hover:text-white">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.back()}
+            className="text-grey-60 hover:text-white"
+          >
             Descartar Alterações
           </Button>
-          <Button type="submit" className="bg-purple-60 hover:bg-purple-65 h-14 px-12 text-white font-bold rounded-xl shadow-xl shadow-purple-60/20">
-            Criar Departamento
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-purple-60 hover:bg-purple-65 h-14 px-12 text-white-pure font-bold rounded-xl shadow-xl shadow-purple-60/20 disabled:opacity-50"
+          >
+            {isSubmitting ? 'Criando...' : 'Criar Departamento'}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

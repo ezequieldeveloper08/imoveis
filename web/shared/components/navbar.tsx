@@ -25,7 +25,14 @@ export function Navbar() {
             alt="Estatein Logo"
             width={120}
             height={40}
-            className="h-8 w-auto"
+            className="h-8 w-auto hidden dark:block"
+          />
+          <Image
+            src="/assets/logo-black.svg"
+            alt="Estatein Logo"
+            width={120}
+            height={40}
+            className="h-8 w-auto dark:hidden"
           />
         </Link>
 

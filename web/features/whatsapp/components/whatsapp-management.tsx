@@ -183,7 +183,7 @@ export function WhatsAppManagement() {
           <Button 
             onClick={handleCreateInstance}
             disabled={isCreating}
-            className="bg-purple-60 hover:bg-purple-65 text-white h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-purple-60/20 active:scale-95 transition-all"
+            className="bg-purple-60 hover:bg-purple-65 text-white-pure h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-purple-60/20 active:scale-95 transition-all"
           >
             {isCreating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5 mr-3" />}
             Inicializar WhatsApp
@@ -267,7 +267,7 @@ export function WhatsAppManagement() {
                   <Button 
                     onClick={handleSaveWebhook}
                     disabled={isSavingWebhook}
-                    className="h-12 px-8 rounded-2xl bg-purple-60 hover:bg-purple-65 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-purple-60/20 transition-all"
+                    className="h-12 px-8 rounded-2xl bg-purple-60 hover:bg-purple-65 text-white-pure font-black uppercase tracking-widest text-[10px] shadow-xl shadow-purple-60/20 transition-all"
                   >
                     {isSavingWebhook ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar Eventos'}
                   </Button>
@@ -288,7 +288,7 @@ export function WhatsAppManagement() {
                       <div className={cn(
                         "h-6 w-6 rounded-lg border flex items-center justify-center shrink-0 transition-all",
                         selectedEvents.includes(event.id)
-                          ? "bg-purple-60 border-purple-60 text-white"
+                          ? "bg-purple-60 border-purple-60 text-white-pure"
                           : "bg-grey-10 border-grey-20 text-transparent group-hover:border-grey-30"
                       )}>
                         <CheckCircle2 className="h-4 w-4" />
@@ -375,11 +375,11 @@ export function WhatsAppManagement() {
 
             <div className="space-y-4 mb-10">
               <div className="flex items-center gap-4 bg-grey-08 p-5 rounded-[1.5rem] border border-grey-15">
-                <div className="h-8 w-8 rounded-xl bg-purple-60 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-purple-60/20">1</div>
+                <div className="h-8 w-8 rounded-xl bg-purple-60 flex items-center justify-center text-white-pure text-xs font-black shadow-lg shadow-purple-60/20">1</div>
                 <p className="text-grey-40 text-xs font-bold leading-relaxed">Abra o WhatsApp e vá em <span className="text-white">Aparelhos Conectados</span>.</p>
               </div>
               <div className="flex items-center gap-4 bg-grey-08 p-5 rounded-[1.5rem] border border-grey-15">
-                <div className="h-8 w-8 rounded-xl bg-purple-60 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-purple-60/20">2</div>
+                <div className="h-8 w-8 rounded-xl bg-purple-60 flex items-center justify-center text-white-pure text-xs font-black shadow-lg shadow-purple-60/20">2</div>
                 <p className="text-grey-40 text-xs font-bold leading-relaxed">Aponte a câmera para esta tela para parear seu celular.</p>
               </div>
             </div>

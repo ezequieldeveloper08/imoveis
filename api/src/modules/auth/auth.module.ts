@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './application/services/auth.service';
 import { AuthController } from './presentation/controllers/auth.controller';
+import { UserController } from './presentation/controllers/user.controller';
 import { UserRepository } from './domain/repositories/user.repository';
 import { TypeOrmUserRepository } from './infrastructure/repositories/typeorm-user.repository';
 import { UserSchema } from './infrastructure/repositories/user.schema';
@@ -26,7 +27,7 @@ import { OrganizationSchema } from '../organizations/infrastructure/repositories
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, UserController],
   providers: [
     AuthService,
     JwtStrategy,

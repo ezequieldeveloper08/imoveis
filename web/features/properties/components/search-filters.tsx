@@ -24,7 +24,7 @@ export function SearchFilters() {
                 className="w-full bg-transparent border-none py-6 pl-6 pr-12 text-white placeholder:text-grey-40 focus:outline-none text-lg"
               />
             </div>
-            <Button className="bg-purple-60 hover:bg-purple-65 text-white h-auto py-4 px-8 rounded-xl flex gap-2 text-lg font-semibold m-2">
+            <Button className="bg-purple-60 hover:bg-purple-65 text-white-pure h-auto py-4 px-8 rounded-xl flex gap-2 text-lg font-semibold m-2">
               <Search className="h-5 w-5" />
               Find Property
             </Button>

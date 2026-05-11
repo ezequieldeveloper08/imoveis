@@ -38,9 +38,9 @@ export function PropertiesListing() {
         </div>
 
         <Link href="/admin/properties/new">
-          <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white font-semibold shadow-lg shadow-purple-60/20">
+          <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white-pure font-semibold shadow-lg shadow-purple-60/20">
             <Plus className="h-4 w-4 mr-2" />
-            Cadastrar Imóvel
+            Novo Imóvel
           </Button>
         </Link>
       </div>

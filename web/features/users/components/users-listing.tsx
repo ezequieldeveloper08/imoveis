@@ -1,6 +1,8 @@
 'use client';
 
-import { MOCK_USERS, User } from '../types/user.types';
+import { useState, useEffect } from 'react';
+import { User } from '../types/user.types';
+import { usersService } from '../services/users.service';
 import { 
   UserPlus, 
   Search, 
@@ -9,14 +11,48 @@ import {
   User as UserIcon, 
   Mail,
   Shield,
-  Circle
+  Circle,
+  Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export function UsersListing() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadUsers = async () => {
+    setIsLoading(true);
+    try {
+      const data = await usersService.getAll();
+      setUsers(data);
+    } catch (error) {
+      console.error('Failed to load users:', error);
+      toast.error('Erro ao carregar equipe.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja remover este usuário?')) return;
+    try {
+      await usersService.delete(id);
+      toast.success('Usuário removido com sucesso.');
+      loadUsers();
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      toast.error('Erro ao remover usuário.');
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -27,7 +63,7 @@ export function UsersListing() {
         </div>
         
         <Link href="/admin/users/new">
-          <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white font-semibold shadow-lg shadow-purple-60/20">
+          <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white-pure font-semibold shadow-lg shadow-purple-60/20">
             <UserPlus className="h-4 w-4 mr-2" />
             Convidar Membro
           </Button>
@@ -70,7 +106,22 @@ export function UsersListing() {
               </tr>
             </thead>
             <tbody className="divide-y divide-grey-15">
-              {MOCK_USERS.map((user) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-grey-60">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="h-8 w-8 border-2 border-purple-60 border-t-transparent rounded-full animate-spin mb-4" />
+                      <p>Carregando equipe...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-grey-60">
+                    Nenhum usuário encontrado.
+                  </td>
+                </tr>
+              ) : users.map((user) => (
                 <tr key={user.id} className="hover:bg-grey-15/30 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
@@ -105,7 +156,7 @@ export function UsersListing() {
                   </td>
                   <td className="px-6 py-5">
                     <span className="text-xs text-grey-30 font-medium">
-                      {user.department}
+                      {user.department || 'Não definido'}
                     </span>
                   </td>
                   <td className="px-6 py-5">
@@ -121,21 +172,21 @@ export function UsersListing() {
                   </td>
                   <td className="px-6 py-5">
                     <p className="text-xs text-grey-60">
-                      {new Date(user.lastLogin).toLocaleDateString('pt-BR', {
+                      {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: 'short',
                         hour: '2-digit',
                         minute: '2-digit'
-                      })}
+                      }) : 'Nunca acessou'}
                     </p>
                   </td>
                   <td className="px-6 py-5 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button className="h-8 w-8 rounded-lg bg-grey-08 border border-grey-15 flex items-center justify-center text-grey-40 hover:text-white transition-all">
                         <Mail className="h-4 w-4" />
                       </button>
-                      <button className="h-8 w-8 rounded-lg bg-grey-08 border border-grey-15 flex items-center justify-center text-grey-40 hover:text-white transition-all">
-                        <MoreVertical className="h-4 w-4" />
+                      <button onClick={() => handleDelete(user.id)} className="h-8 w-8 rounded-lg bg-grey-08 border border-grey-15 flex items-center justify-center text-grey-40 hover:text-red-400 transition-all">
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>

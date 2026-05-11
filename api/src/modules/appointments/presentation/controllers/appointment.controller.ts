@@ -14,6 +14,7 @@ export class AppointmentController {
   @Post()
   @ApiOperation({ summary: 'Create appointment' })
   create(@Body() createAppointmentDto: CreateAppointmentDto, @Request() req) {
+    console.log('[API] Received createAppointmentDto:', createAppointmentDto);
     return this.appointmentService.create({
       ...createAppointmentDto,
       organizationId: req.user.organizationId,

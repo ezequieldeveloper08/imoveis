@@ -31,17 +31,38 @@ const userSchema = z.object({
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
 });
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { usersService } from '../services/users.service';
+import { toast } from 'sonner';
+
 export function UserForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(userSchema),
     defaultValues: {
       role: 'AGENT',
+      department: 'vendas',
     }
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    // Call service here
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true);
+    try {
+      await usersService.create({
+        ...data,
+        status: 'active'
+      });
+      toast.success('Membro convidado com sucesso!');
+      router.push('/admin/users');
+    } catch (error: any) {
+      console.error('Failed to create user:', error);
+      toast.error(error?.message || 'Erro ao criar usuário.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -83,7 +104,7 @@ export function UserForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="role">Nível de Acesso</Label>
-              <Select defaultValue="AGENT">
+              <Select defaultValue="AGENT" onValueChange={(val) => setValue('role', val)}>
                 <SelectTrigger className="h-14 bg-grey-08 border-grey-15">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-grey-40" />
@@ -100,7 +121,7 @@ export function UserForm() {
 
             <div className="space-y-2">
               <Label htmlFor="department">Departamento</Label>
-              <Select defaultValue="vendas">
+              <Select defaultValue="vendas" onValueChange={(val) => setValue('department', val)}>
                 <SelectTrigger className="h-14 bg-grey-08 border-grey-15">
                   <div className="flex items-center gap-2">
                     <Network className="h-4 w-4 text-grey-40" />
@@ -136,11 +157,11 @@ export function UserForm() {
 
         {/* Footer Actions */}
         <div className="flex items-center justify-end gap-4 pt-4">
-          <Button type="button" variant="ghost" className="text-grey-60 hover:text-white">
+          <Button type="button" variant="ghost" onClick={() => router.back()} className="text-grey-60 hover:text-white">
             Cancelar
           </Button>
-          <Button type="submit" className="bg-purple-60 hover:bg-purple-65 h-14 px-12 text-white font-bold rounded-xl shadow-xl shadow-purple-60/20">
-            Criar Usuário
+          <Button type="submit" disabled={isSubmitting} className="bg-purple-60 hover:bg-purple-65 h-14 px-12 text-white-pure font-bold rounded-xl shadow-xl shadow-purple-60/20 disabled:opacity-50">
+            {isSubmitting ? 'Criando...' : 'Criar Usuário'}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

@@ -21,6 +21,16 @@ export class UserSchema {
   })
   role: 'ADMIN' | 'AGENT' | 'MANAGER';
 
+  @Column({ nullable: true })
+  department?: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['active', 'inactive'],
+    default: 'active',
+  })
+  status: 'active' | 'inactive';
+
   @Column()
   organizationId: string;
 

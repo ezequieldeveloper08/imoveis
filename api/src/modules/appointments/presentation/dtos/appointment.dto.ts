@@ -2,15 +2,15 @@ import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator'
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateAppointmentDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  propertyId: string;
+  @IsOptional()
+  propertyId?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  leadId: string;
+  @IsOptional()
+  leadId?: string;
 
   @ApiProperty({ example: '2024-05-08T10:00:00Z' })
   @IsDateString()

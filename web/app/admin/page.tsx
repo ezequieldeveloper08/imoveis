@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { 
-  StatsCards, 
-  RevenueChart, 
-  ConversionFunnel 
+import {
+  StatsCards,
+  RevenueChart,
+  ConversionFunnel
 } from '@/features/dashboard/components/dashboard-charts';
 import { Button } from '@/components/ui/button';
 import { Download, Plus, Filter } from 'lucide-react';
@@ -46,7 +46,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard Executivo</h1>
           <p className="text-grey-60 mt-1">Bem-vindo de volta! Aqui está o resumo da sua operação hoje.</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Button variant="outline" className="bg-grey-10 border-grey-15 h-11 px-4 text-white hover:bg-grey-15">
             <Download className="h-4 w-4 mr-2" />
@@ -56,7 +56,7 @@ export default function DashboardPage() {
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
-          <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 text-white font-semibold shadow-lg shadow-purple-60/20">
+          <Button className="bg-purple-60 hover:bg-purple-65 h-11 px-6 font-semibold shadow-lg shadow-purple-60/20">
             <Plus className="h-4 w-4 mr-2" />
             Novo Lead
           </Button>

@@ -4,6 +4,8 @@ export class User {
   password?: string;
   name: string;
   role: 'ADMIN' | 'AGENT' | 'MANAGER';
+  department?: string;
+  status: 'active' | 'inactive';
   organizationId: string;
   createdAt: Date;
   updatedAt: Date;

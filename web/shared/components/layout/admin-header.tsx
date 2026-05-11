@@ -1,14 +1,16 @@
 'use client';
 
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Search, User, Sun, Moon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useEffect, useState } from 'react';
 import { AuthUser } from '@/features/auth/types/auth.types';
+import { useTheme } from 'next-themes';
 
 export function AdminHeader() {
   const { getUser } = useAuth();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     setUser(getUser());
@@ -25,6 +27,14 @@ export function AdminHeader() {
       </div>
 
       <div className="flex items-center gap-4">
+        <button 
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="h-11 w-11 flex items-center justify-center rounded-xl bg-grey-10 border border-grey-15 text-grey-40 hover:text-white hover:border-grey-30 transition-all"
+        >
+          <Sun className="h-5 w-5 hidden dark:block" />
+          <Moon className="h-5 w-5 dark:hidden" />
+        </button>
+
         <button className="h-11 w-11 flex items-center justify-center rounded-xl bg-grey-10 border border-grey-15 text-grey-40 hover:text-white hover:border-grey-30 transition-all relative">
           <Bell className="h-5 w-5" />
           <span className="absolute top-3 right-3 w-2 h-2 bg-purple-60 rounded-full border-2 border-grey-10" />

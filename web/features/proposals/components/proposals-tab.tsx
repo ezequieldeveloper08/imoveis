@@ -57,7 +57,7 @@ export function ProposalsTab({ propertyId, leads }: ProposalsTabProps) {
         <h3 className="text-lg font-bold text-white">Registro de Propostas</h3>
         <Button
           onClick={() => setIsModalOpen(true)}
-          className="bg-purple-60 hover:bg-purple-65 text-white h-10 px-4 text-xs"
+          className="bg-purple-60 hover:bg-purple-65 text-white-pure h-10 px-4 text-xs"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nova Proposta

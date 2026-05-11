@@ -12,6 +12,11 @@ export class TypeOrmUserRepository implements UserRepository {
     private readonly repository: Repository<UserSchema>,
   ) {}
 
+  async findByOrganization(orgId: string): Promise<User[]> {
+    const users = await this.repository.find({ where: { organizationId: orgId } });
+    return users.map(user => new User(user));
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { email } });
     return user ? new User(user) : null;

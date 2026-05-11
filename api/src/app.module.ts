@@ -13,6 +13,7 @@ import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { ContactModule } from './modules/contacts/contact.module';
 import { WhatsappModule } from './modules/whatsapp/whatsapp.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { DepartmentsModule } from './modules/departments/departments.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     ContactModule,
     WhatsappModule,
     DashboardModule,
+    DepartmentsModule,
   ],
   controllers: [],
   providers: [],
